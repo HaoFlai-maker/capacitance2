@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Физика: Электроемкость конденсаторов | 3D-лаборатория</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #e2e9f2 0%, #cddae8 100%);
+            margin: 0;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-card {
+            max-width: 1500px;
+            width: 100%;
+            background: rgba(255,255,255,0.96);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f2c3d 0%, #1a4a6e 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .grid-capacitors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 30px;
+            padding: 32px 28px;
+            background: #f4f8fe;
+        }
+
+        .capacitor-panel {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(100, 130, 160, 0.2);
+        }
+
+        .capacitor-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 24px 36px -12px rgba(0, 32, 64, 0.25);
+        }
+
+        .panel-title {
+            background: linear-gradient(120deg, #eef3fc 0%, #e3ecf5 100%);
+            padding: 16px 20px;
+            border-bottom: 2px solid #c5d7e8;
+        }
+
+        .panel-title h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a4972;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .visualization {
+            background: linear-gradient(145deg, #fefefe 0%, #f5f9ff 100%);
+            padding: 20px 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 210px;
+            border-bottom: 1px solid #e6edf5;
+        }
+
+        .controls {
+            padding: 20px 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #1f3b4c;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .input-group label span {
+            font-family: monospace;
+            color: #2c7da0;
+            font-weight: normal;
+            font-size: 0.8rem;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 5px;
+            border-radius: 5px;
+            background: #cbdbe0;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #1f6392;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            transition: 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #0e4a70;
+            transform: scale(1.2);
+        }
+
+        input[type="number"] {
+            width: 88px;
+            padding: 6px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            font-size: 0.85rem;
+            background: #ffffff;
+            transition: 0.2s;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        input[type="number"]:focus {
+            border-color: #2c7da0;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+
+        .result-area {
+            background: linear-gradient(135deg, #e3edf6 0%, #d5e2ef 100%);
+            border-radius: 28px;
+            padding: 14px 16px;
+            margin-top: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #0f3b5c;
+            border: 1px solid #c2d5e8;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .result-area span {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #014d74;
+            background: rgba(255,255,255,0.6);
+            padding: 3px 12px;
+            border-radius: 40px;
+            display: inline-block;
+        }
+
+        footer {
+            background: #e2edf7;
+            text-align: center;
+            padding: 14px;
+            font-size: 0.75rem;
+            color: #2c5270;
+            border-top: 1px solid #cbdde9;
+        }
+
+        .warning-text {
+            font-size: 0.7rem;
+            color: #c26b2e;
+            margin-top: 6px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        @media (max-width: 720px) {
+            .grid-capacitors {
+                padding: 20px 16px;
+                gap: 20px;
+            }
+            .slider-wrapper {
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-card">
+    <div class="header">
+        <h1>Лабораторная работа по физике</h1>
+        <p>Определение электроемкости конденсаторов</p>
+    </div>
+
+    <div class="grid-capacitors">
+        <!--Этот коммент нужен для меня и для гитхаба, не обращайте внимания-->
+        <div class="capacitor-panel">
+            <div class="panel-title">
+                <h3>1. Плоский конденсатор</h3>
+            </div>
+            <div class="visualization">
+                <svg width="220" height="140" viewBox="0 0 220 140" style="filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15));">
+                    <defs>
+                        <linearGradient id="metalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#b0c4de"/>
+                            <stop offset="50%" stop-color="#8aaec0"/>
+                            <stop offset="100%" stop-color="#6c8e9e"/>
+                        </linearGradient>
+                        <linearGradient id="metalLight" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#c0d4e8"/>
+                            <stop offset="100%" stop-color="#8aadc2"/>
+                        </linearGradient>
+                    </defs>
+                    <rect id="flatTopPlate" x="55" y="20" width="110" height="10" fill="url(#metalGrad)" rx="4" ry="4" stroke="#4a6e82" stroke-width="0.8" />
+                    <rect x="55" y="22" width="110" height="3" fill="rgba(255,255,240,0.4)" rx="2" />
+                    <rect id="flatBottomPlate" x="55" y="85" width="110" height="10" fill="url(#metalGrad)" rx="4" ry="4" stroke="#4a6e82" stroke-width="0.8" />
+                    <rect x="55" y="87" width="110" height="3" fill="rgba(255,255,240,0.4)" rx="2" />
+                    <rect id="fieldArea" x="55" y="30" width="110" height="55" fill="url(#metalLight)" fill-opacity="0.2" stroke="#7fa1bc" stroke-width="0.5" stroke-dasharray="3 2" />
+                    <line id="distLine" x1="110" y1="30" x2="110" y2="85" stroke="#2c5a7a" stroke-width="1.5" stroke-dasharray="4 3" />
+                </svg>
+            </div>
+            <div class="controls">
+                <div class="input-group">
+                    <label>Площадь пластин S <span>(см²)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="flatSquareSlider" min="10" max="450" step="1" value="120">
+                        <input type="number" id="flatSquareNum" step="1" value="120">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Диэлектрическая проницаемость ε <span>(отн.)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="flatEpsilonSlider" min="1" max="10" step="0.1" value="2.2">
+                        <input type="number" id="flatEpsilonNum" step="0.1" value="2.2">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Материал диэлектрика</label>
+                    <select id="dielectricMaterial">
+                        <option value="1.0">Вакуум / Воздух (ε = 1.0)</option>
+                        <option value="2.2">Бумага (ε = 3.0)</option>
+                        <option value="2.5">Полиэтилен (ε = 2.5)</option>
+                        <option value="4.5">Стекло (ε = 4.5)</option>
+                        <option value="5.0">Слюда (ε = 5.0)</option>
+                        <option value="5.0">Масло касторовое (ε = 4.6)</option>
+                        <option value="6.0">Фарфор (ε = 6.0)</option>
+                        <option value="80">Вода (дистиллированная) (ε = 80)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Расстояние между пластинами d <span>(мм)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="flatDistanceSlider" min="0.5" max="15" step="0.1" value="2.5">
+                        <input type="number" id="flatDistanceNum" step="0.1" value="2.5">
+                    </div>
+                </div>
+                <div class="result-area">
+                    Ёмкость: <span id="flatCapValue">0.00</span> пФ
+                </div>
+            </div>
+        </div>
+
+        <!-- Цилиндрический конденсатор -->
+        <div class="capacitor-panel">
+            <div class="panel-title">
+                <h3>2. Цилиндрический конденсатор</h3>
+            </div>
+            <div class="visualization">
+                <svg width="220" height="170" viewBox="0 0 220 170" id="cylinderSvg" style="filter: drop-shadow(3px 5px 7px rgba(0,0,0,0.2));">
+                    <defs>
+                        <linearGradient id="outerMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#a8bbcc"/>
+                            <stop offset="50%" stop-color="#7e9bb2"/>
+                            <stop offset="100%" stop-color="#5c7d96"/>
+                        </linearGradient>
+                        <linearGradient id="innerMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#c0d2e0"/>
+                            <stop offset="100%" stop-color="#8eb0c8"/>
+                        </linearGradient>
+                    </defs>
+                    <rect id="outerCylRect" x="45" y="30" width="130" height="100" fill="url(#outerMetal)" rx="18" ry="18" stroke="#3b6e8f" stroke-width="1.2" />
+                    <ellipse id="outerTopEllipse" cx="110" cy="30" rx="65" ry="14" fill="#cfdfec" stroke="#3b6e8f" stroke-width="1" />
+                    <ellipse id="outerBottomEllipse" cx="110" cy="130" rx="65" ry="14" fill="#cfdfec" stroke="#3b6e8f" stroke-width="1" />
+                    <rect id="innerCylRect" x="70" y="42" width="80" height="76" fill="url(#innerMetal)" rx="12" ry="12" stroke="#2a5778" stroke-width="1" />
+                    <ellipse id="innerTopEllipse" cx="110" cy="42" rx="40" ry="10" fill="#cbdbe9" stroke="#2a5778" stroke-width="0.8" />
+                    <ellipse id="innerBottomEllipse" cx="110" cy="118" rx="40" ry="10" fill="#cbdbe9" stroke="#2a5778" stroke-width="0.8" />
+                    <rect x="50" y="32" width="15" height="96" fill="rgba(255,255,245,0.3)" rx="4" />
+                </svg>
+            </div>
+            <div class="controls">
+                <div class="input-group">
+                    <label>Длина L <span>(см)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="cylLengthSlider" min="1.5" max="28" step="0.2" value="8.0">
+                        <input type="number" id="cylLengthNum" step="0.2" value="8.0">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Внутренний радиус R₁ <span>(см)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="cylR1Slider" min="0.4" max="9" step="0.1" value="1.2">
+                        <input type="number" id="cylR1Num" step="0.1" value="1.2">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Внешний радиус R₂ <span>(см)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="cylR2Slider" min="0.9" max="13" step="0.1" value="2.8">
+                        <input type="number" id="cylR2Num" step="0.1" value="2.8">
+                    </div>
+                </div>
+                <div class="result-area">
+                    Ёмкость: <span id="cylCapValue">0.00</span> пФ
+                </div>
+                <div class="warning-text" id="cylWarning"></div>
+            </div>
+        </div>
+
+        <!-- Сферический конденсатор -->
+        <div class="capacitor-panel">
+            <div class="panel-title">
+                <h3>3. Сферический конденсатор</h3>
+            </div>
+            <div class="visualization">
+                <svg width="190" height="170" viewBox="0 0 190 170" id="sphereSvg" style="filter: drop-shadow(2px 5px 8px rgba(0,0,0,0.2));">
+                    <defs>
+                        <radialGradient id="outerSphereGrad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#bbd2e8"/>
+                            <stop offset="100%" stop-color="#7f9cbb"/>
+                        </radialGradient>
+                        <radialGradient id="innerSphereGrad" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stop-color="#d7e6f5"/>
+                            <stop offset="100%" stop-color="#9ab5cf"/>
+                        </radialGradient>
+                    </defs>
+                    <circle id="outerSphere" cx="95" cy="85" r="58" fill="url(#outerSphereGrad)" stroke="#3a6e8f" stroke-width="1.8" />
+                    <circle id="innerSphere" cx="95" cy="85" r="28" fill="url(#innerSphereGrad)" stroke="#2a5778" stroke-width="1.5" />
+                    <circle cx="95" cy="85" r="3" fill="#ffdd99" stroke="#c97e2a" stroke-width="0.8" />
+                </svg>
+            </div>
+            <div class="controls">
+                <div class="input-group">
+                    <label>Внутренний радиус R₁ <span>(см)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="sphR1Slider" min="0.6" max="9" step="0.2" value="1.5">
+                        <input type="number" id="sphR1Num" step="0.2" value="1.5">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Внешний радиус R₂ <span>(см)</span></label>
+                    <div class="slider-wrapper">
+                        <input type="range" id="sphR2Slider" min="1.8" max="14" step="0.2" value="3.8">
+                        <input type="number" id="sphR2Num" step="0.2" value="3.8">
+                    </div>
+                </div>
+                <div class="result-area">
+                    Ёмкость: <span id="sphCapValue">0.00</span> пФ
+                </div>
+                <div class="warning-text" id="sphWarning"></div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        Электрическая постоянная ε₀ = 8.854·10⁻¹² Ф/м | Расчёты в реальном времени
+        Для корректного расчёта необходимо R₂ > R₁ (цилиндрический и сферический)
+    </footer>
+</div>
+
+<script>
+    const EPS0 = 8.854187817e-12;
+
+    function cmToM(cm) { return cm / 100; }
+    function mmToM(mm) { return mm / 1000; }
+    function cm2ToM2(cm2) { return cm2 / 10000; }
+
+    function formatCap(pF) {
+        return pF.toFixed(2);
+    }
+
+    // === ПЛОСКИЙ ===
+    function updateFlatVisual() {
+        const S_cm2 = parseFloat(document.getElementById('flatSquareNum').value) || 120;
+        const d_mm = parseFloat(document.getElementById('flatDistanceNum').value) || 2.5;
+        const topPlate = document.getElementById('flatTopPlate');
+        const bottomPlate = document.getElementById('flatBottomPlate');
+        const fieldRect = document.getElementById('fieldArea');
+        const distLine = document.getElementById('distLine');
+        if (topPlate && bottomPlate) {
+            let widthFactor = Math.min(40 + Math.sqrt(S_cm2) * 2.2, 170);
+            widthFactor = Math.max(80, widthFactor);
+            const baseX = (220 - widthFactor) / 2;
+            topPlate.setAttribute('x', baseX);
+            topPlate.setAttribute('width', widthFactor);
+            bottomPlate.setAttribute('x', baseX);
+            bottomPlate.setAttribute('width', widthFactor);
+            if (fieldRect) {
+                fieldRect.setAttribute('x', baseX);
+                fieldRect.setAttribute('width', widthFactor);
+            }
+            const gapPx = Math.min(12 + d_mm * 2.4, 65);
+            const topY = 20;
+            const bottomY = topY + 10 + gapPx;
+            bottomPlate.setAttribute('y', bottomY);
+            if (fieldRect) {
+                fieldRect.setAttribute('y', topY + 10);
+                fieldRect.setAttribute('height', gapPx);
+            }
+            if (distLine) {
+                distLine.setAttribute('x1', baseX + widthFactor/2);
+                distLine.setAttribute('x2', baseX + widthFactor/2);
+                distLine.setAttribute('y1', topY + 10);
+                distLine.setAttribute('y2', bottomY);
+            }
+        }
+    }
+
+    function computeFlat() {
+        let S_cm2 = parseFloat(document.getElementById('flatSquareNum').value);
+        let eps = parseFloat(document.getElementById('flatEpsilonNum').value);
+        let d_mm = parseFloat(document.getElementById('flatDistanceNum').value);
+        if (isNaN(S_cm2)) S_cm2 = 120;
+        if (isNaN(eps)) eps = 2.2;
+        if (isNaN(d_mm)) d_mm = 2.5;
+        S_cm2 = Math.min(500, Math.max(10, S_cm2));
+        d_mm = Math.min(20, Math.max(0.3, d_mm));
+        eps = Math.min(10, Math.max(1, eps));
+
+        document.getElementById('flatSquareNum').value = S_cm2;
+        document.getElementById('flatSquareSlider').value = S_cm2;
+        document.getElementById('flatDistanceNum').value = d_mm.toFixed(2);
+        document.getElementById('flatDistanceSlider').value = d_mm;
+        document.getElementById('flatEpsilonNum').value = eps;
+        document.getElementById('flatEpsilonSlider').value = eps;
+
+        const S_m2 = cm2ToM2(S_cm2);
+        const d_m = mmToM(d_mm);
+        const C_farad = EPS0 * eps * S_m2 / d_m;
+        const C_pF = C_farad * 1e12;
+        document.getElementById('flatCapValue').innerText = formatCap(C_pF);
+        updateFlatVisual();
+    }
+
+    // === ЦИЛИНДРИЧЕСКИЙ ===
+    function updateCylVisual(r1, r2, lengthCm) {
+        const svg = document.getElementById('cylinderSvg');
+        if (!svg) return;
+        let visR1 = Math.min(Math.max(r1 * 6, 12), 50);
+        let visR2 = Math.min(Math.max(r2 * 5.5, visR1 + 12), 78);
+        let visLen = Math.min(Math.max(lengthCm * 3.8, 55), 120);
+        const outerRect = document.getElementById('outerCylRect');
+        const innerRect = document.getElementById('innerCylRect');
+        const outerTop = document.getElementById('outerTopEllipse');
+        const outerBottom = document.getElementById('outerBottomEllipse');
+        const innerTop = document.getElementById('innerTopEllipse');
+        const innerBottom = document.getElementById('innerBottomEllipse');
+        if (outerRect && innerRect) {
+            let outerW = visR2 * 1.8;
+            let outerX = (220 - outerW)/2;
+            outerRect.setAttribute('x', outerX);
+            outerRect.setAttribute('width', outerW);
+            outerRect.setAttribute('height', visLen);
+            outerRect.setAttribute('y', 30 + (100 - visLen)/2);
+            outerTop.setAttribute('cx', 110);
+            outerTop.setAttribute('cy', outerRect.getAttribute('y'));
+            outerTop.setAttribute('rx', outerW/2);
+            outerBottom.setAttribute('cx', 110);
+            outerBottom.setAttribute('cy', parseFloat(outerRect.getAttribute('y')) + visLen);
+            outerBottom.setAttribute('rx', outerW/2);
+
+            let innerW = visR1 * 1.8;
+            let innerX = (220 - innerW)/2;
+            innerRect.setAttribute('x', innerX);
+            innerRect.setAttribute('width', innerW);
+            innerRect.setAttribute('height', visLen - 10);
+            innerRect.setAttribute('y', parseFloat(outerRect.getAttribute('y')) + 5);
+            innerTop.setAttribute('cx', 110);
+            innerTop.setAttribute('cy', parseFloat(innerRect.getAttribute('y')));
+            innerTop.setAttribute('rx', innerW/2);
+            innerBottom.setAttribute('cx', 110);
+            innerBottom.setAttribute('cy', parseFloat(innerRect.getAttribute('y')) + visLen - 10);
+            innerBottom.setAttribute('rx', innerW/2);
+        }
+    }
+
+    function computeCyl() {
+        let L = parseFloat(document.getElementById('cylLengthNum').value);
+        let R1 = parseFloat(document.getElementById('cylR1Num').value);
+        let R2 = parseFloat(document.getElementById('cylR2Num').value);
+        if (isNaN(L)) L = 8.0;
+        if (isNaN(R1)) R1 = 1.2;
+        if (isNaN(R2)) R2 = 2.8;
+
+        document.getElementById('cylLengthNum').value = L;
+        document.getElementById('cylLengthSlider').value = L;
+        document.getElementById('cylR1Num').value = R1;
+        document.getElementById('cylR1Slider').value = R1;
+        document.getElementById('cylR2Num').value = R2;
+        document.getElementById('cylR2Slider').value = R2;
+
+        const warn = document.getElementById('cylWarning');
+        if (R2 <= R1) {
+            document.getElementById('cylCapValue').innerText = "——";
+            warn.innerText = "Ошибка: R₂ должно быть больше R₁";
+            updateCylVisual(R1, Math.max(R1+0.6, R2), L);
+            return;
+        }
+        warn.innerText = "";
+        const L_m = cmToM(L);
+        const R1_m = cmToM(R1);
+        const R2_m = cmToM(R2);
+        const C_farad = (2 * Math.PI * EPS0 * L_m) / Math.log(R2_m / R1_m);
+        const C_pF = C_farad * 1e12;
+        document.getElementById('cylCapValue').innerText = formatCap(C_pF);
+        updateCylVisual(R1, R2, L);
+    }
+
+    // === СФЕРИЧЕСКИЙ ===
+    function updateSphereVisual(r1, r2) {
+        const outer = document.getElementById('outerSphere');
+        const inner = document.getElementById('innerSphere');
+        if (outer && inner) {
+            let outerR = Math.min(42 + r2 * 3.2, 72);
+            let innerR = Math.min(15 + r1 * 3.0, outerR - 10);
+            if (innerR < 6) innerR = 6;
+            if (outerR <= innerR) outerR = innerR + 18;
+            outer.setAttribute('r', outerR);
+            inner.setAttribute('r', innerR);
+        }
+    }
+
+    function computeSphere() {
+        let r1 = parseFloat(document.getElementById('sphR1Num').value);
+        let r2 = parseFloat(document.getElementById('sphR2Num').value);
+        if (isNaN(r1)) r1 = 1.5;
+        if (isNaN(r2)) r2 = 3.8;
+
+        document.getElementById('sphR1Num').value = r1;
+        document.getElementById('sphR1Slider').value = r1;
+        document.getElementById('sphR2Num').value = r2;
+        document.getElementById('sphR2Slider').value = r2;
+
+        const warn = document.getElementById('sphWarning');
+        if (r2 <= r1) {
+            document.getElementById('sphCapValue').innerText = "——";
+            warn.innerText = "Ошибка: R₂ должно быть больше R₁";
+            updateSphereVisual(r1, Math.max(r1+0.8, r2));
+            return;
+        }
+        warn.innerText = "";
+        const R1_m = cmToM(r1);
+        const R2_m = cmToM(r2);
+        const C_farad = 4 * Math.PI * EPS0 * (R1_m * R2_m) / (R2_m - R1_m);
+        const C_pF = C_farad * 1e12;
+        document.getElementById('sphCapValue').innerText = formatCap(C_pF);
+        updateSphereVisual(r1, r2);
+    }
+
+    // === БИНДИНГИ ПОЛЗУНКОВ ===
+    function bindFlat() {
+        const sqS = document.getElementById('flatSquareSlider'), sqN = document.getElementById('flatSquareNum');
+        const epsS = document.getElementById('flatEpsilonSlider'), epsN = document.getElementById('flatEpsilonNum');
+        const dS = document.getElementById('flatDistanceSlider'), dN = document.getElementById('flatDistanceNum');
+        const upd = () => computeFlat();
+        sqS.addEventListener('input', () => { sqN.value = sqS.value; upd(); });
+        sqN.addEventListener('input', () => { let v = parseFloat(sqN.value); if(!isNaN(v)){ v=Math.min(450,Math.max(10,v)); sqS.value=v; sqN.value=v; upd(); } });
+        epsS.addEventListener('input', () => { epsN.value = epsS.value; upd(); });
+        epsN.addEventListener('input', () => { let v = parseFloat(epsN.value); if(!isNaN(v)){ v=Math.min(10,Math.max(1,v)); epsS.value=v; epsN.value=v; upd(); } });
+        dS.addEventListener('input', () => { dN.value = dS.value; upd(); });
+        dN.addEventListener('input', () => { let v = parseFloat(dN.value); if(!isNaN(v)){ v=Math.min(15,Math.max(0.3,v)); dS.value=v; dN.value=v; upd(); } });
+    }
+
+    function bindCyl() {
+        const ls = document.getElementById('cylLengthSlider'), ln = document.getElementById('cylLengthNum');
+        const r1s = document.getElementById('cylR1Slider'), r1n = document.getElementById('cylR1Num');
+        const r2s = document.getElementById('cylR2Slider'), r2n = document.getElementById('cylR2Num');
+        const upd = () => computeCyl();
+        ls.addEventListener('input', () => { ln.value = ls.value; upd(); });
+        ln.addEventListener('input', () => { let v = parseFloat(ln.value); if(!isNaN(v)){ ls.value=v; ln.value=v; upd(); } });
+        r1s.addEventListener('input', () => { r1n.value = r1s.value; upd(); });
+        r1n.addEventListener('input', () => { let v = parseFloat(r1n.value); if(!isNaN(v)){ r1s.value=v; r1n.value=v; upd(); } });
+        r2s.addEventListener('input', () => { r2n.value = r2s.value; upd(); });
+        r2n.addEventListener('input', () => { let v = parseFloat(r2n.value); if(!isNaN(v)){ r2s.value=v; r2n.value=v; upd(); } });
+    }
+
+    function bindSphere() {
+        const r1s = document.getElementById('sphR1Slider'), r1n = document.getElementById('sphR1Num');
+        const r2s = document.getElementById('sphR2Slider'), r2n = document.getElementById('sphR2Num');
+        const upd = () => computeSphere();
+        r1s.addEventListener('input', () => { r1n.value = r1s.value; upd(); });
+        r1n.addEventListener('input', () => { let v = parseFloat(r1n.value); if(!isNaN(v)){ r1s.value=v; r1n.value=v; upd(); } });
+        r2s.addEventListener('input', () => { r2n.value = r2s.value; upd(); });
+        r2n.addEventListener('input', () => { let v = parseFloat(r2n.value); if(!isNaN(v)){ r2s.value=v; r2n.value=v; upd(); } });
+    }
+
+    function init() {
+        bindFlat();
+        bindCyl();
+        bindSphere();
+        computeFlat();
+        computeCyl();
+        computeSphere();
+    }
+    init();
+</script>
+</body>
+</html>

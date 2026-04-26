@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Физика: Электроемкость конденсаторов | Интерактивная лаборатория</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #76ffff78 0%, #d9e4f5 100%);
+            margin: 0;
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-card {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #0b2b44;
+            color: white;
+            padding: 1.5rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+        }
+
+        .header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.85;
+            font-size: 1rem;
+        }
+
+        .grid-capacitors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            padding: 32px 28px;
+            background: #f8fafd;
+        }
+
+        .capacitor-panel {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2edf7;
+        }
+
+        .capacitor-panel:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0, 32, 64, 0.2);
+        }
+
+        .panel-title {
+            background: #eef3fc;
+            padding: 16px 20px;
+            border-bottom: 2px solid #cbdde9;
+        }
+
+        .panel-title h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a4972;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .visualization {
+            background: #ffffff;
+            padding: 20px 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            border-bottom: 1px solid #eef2f8;
+        }
+
+        .controls {
+            padding: 20px 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .input-row label {
+            font-weight: 600;
+            color: #1f3b4c;
+            min-width: 70px;
+            font-size: 0.85rem;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: #fefefe;
+            transition: 0.2s;
+            font-family: monospace;
+        }
+
+        input[type="number"]:focus {
+            border-color: #2c7da0;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+        }
+
+        .slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 2;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 4px;
+            border-radius: 5px;
+            background: #cbd5e1;
+        }
+
+        .result-area {
+            background: #eef2fa;
+            border-radius: 24px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #0f3b5c;
+            border: 1px solid #cfdfed;
+        }
+
+        .result-area span {
+            font-family: 'Courier New', monospace;
+            font-size: 1.35rem;
+            color: #035c7c;
+        }
+
+        button {
+            background: #1f6392;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: #0e4a70;
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            background: #e2edf7;
+            text-align: center;
+            padding: 14px;
+            font-size: 0.75rem;
+            color: #2c5270;
+            border-top: 1px solid #cbdde9;
+        }
+
+        @media (max-width: 720px) {
+            .grid-capacitors {
+                padding: 20px 16px;
+                gap: 20px;
+            }
+            .input-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .slider-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="main-card">
+    <div class="header">
+        <h1>⚡ Лабораторная работа по физике</h1>
+        <p>Определение электроемкости конденсаторов | Интерактивная визуализация</p>
+    </div>
+
+    <div class="grid-capacitors">
+        <!-- Плоский конденсатор (без пунктирной линии) -->
+        <div class="capacitor-panel" id="flatPanel">
+            <div class="panel-title">
+                <h3>📐 1. Плоский конденсатор</h3>
+            </div>
+            <div class="visualization">
+                <div style="position: relative; width: 200px; height: 130px; display: flex; justify-content: center; align-items: center;">
+                    <svg width="200" height="130" viewBox="0 0 200 130">
+                        <!-- Верхняя пластина -->
+                        <rect id="flatPlateTop" x="50" y="25" width="100" height="8" fill="#5a6e7c" rx="3" />
+                        <!-- Нижняя пластина -->
+                        <rect id="flatPlateBottom" x="50" y="85" width="100" height="8" fill="#5a6e7c" rx="3" />
+                        <!-- Подпись расстояния -->
+                        <text x="15" y="65" font-size="9" fill="#2c3e50">d</text>
+                        <line id="distanceLine" x1="100" y1="33" x2="100" y2="85" stroke="#2c3e50" stroke-width="1.2" stroke-dasharray="3 2" />
+                    </svg>
+                </div>
+            </div>
+            <div class="controls">
+                <div class="input-group">
+                    <div class="input-row">
+                        <label>📏 Площадь S (см²)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="flatSquareSlider" min="10" max="400" step="1" value="120">
+                            <input type="number" id="flatSquareNum" step="1" value="120" style="width: 85px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-row">
+                        <label>🧪 Диэлектрическая проницаемость ε</label>
+                        <input type="number" id="flatEpsilon" step="0.1" value="2.2" style="width: 100px;">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <div class="input-row">
+                        <label>📏 Расстояние d (мм)</label>
+                        <div class="slider-wrapper">
+                            <input type="range" id="flatDistanceSlider" min="0.5" max="15" step="0.1" value="2.5">
+                            <input type="number" id="flatDistanceNum" step="0.1" value="2.5" style="width: 85px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="result-area" id="flatResult">
+                    ⚡ Ёмкость: <span id="flatCapValue">0.00</span> пФ
+                </div>
+            </div>
+        </div>
+
+        <!-- Цилиндрический конденсатор (без ограничений на радиусы) -->
+        <div class="capacitor-panel">
+            <div class="panel-title">
+                <h3>🌀 2. Цилиндрический конденсатор</h3>
+            </div>
+            <div class="visualization">
+                <svg width="200" height="150" viewBox="0 0 200 150" id="cylinderSvgMain">
+                    <!-- внешний цилиндр (оболочка) -->
+                    <rect x="45" y="25" width="110" height="100" fill="#e9f0f5" stroke="#3b6e8f" stroke-width="1.5" rx="12" />
+                    <ellipse cx="100" cy="25" rx="55" ry="12" fill="#d4e3ef" stroke="#3b6e8f" stroke-width="1.2" />
+                    <ellipse cx="100" cy="125" rx="55" ry="12" fill="#d4e3ef" stroke="#3b6e8f" stroke-width="1.2" />
+                    <!-- внутренний цилиндр -->
+                    <rect x="70" y="35" width="60" height="80" fill="#c0d2e2" stroke="#2a5778" stroke-width="1.5" rx="8" />
+                    <ellipse cx="100" cy="35" rx="30" ry="9" fill="#b0c4de" stroke="#2a5778" stroke-width="1" />
+                    <ellipse cx="100" cy="115" rx="30" ry="9" fill="#b0c4de" stroke="#2a5778" stroke-width="1" />
+                    <text x="30" y="65" font-size="8" fill="#1f4e6e">R₁</text>
+                    <text x="150" y="65" font-size="8" fill="#1f4e6e">R₂</text>
+                    <text x="165" y="20" font-size="8" fill="#1f4e6e">L</text>
+                </svg>
+            </div>
+            <div class="controls">
+                <div class="input-group">
+                    <label>📏 Длина L (см)</label>
+                    <input type="number" id="cylLength" step="0.2" value="8.0">
+                </div>
+                <div class="input-group">
+                    <label>📌 Внутренний радиус R₁ (см)</label>
+                    <input type="number" id="cylR1" step="0.1" value="1.2">
+                </div>
+                <div class="input-group">
+                    <label>📌 Внешний радиус R₂ (см)</label>
+                    <input type="number" id="cylR2" step="0.1" value="2.8">
+                </div>
+                <div class="result-area" id="cylResult">
+                    ⚡ Ёмкость: <span id="cylCapValue">0.00</span> пФ
+                </div>
+            </div>
+        </div>
+
+        <!-- Сферический конденсатор -->
+        <div class="capacitor-panel">
+            <div class="panel-title">
+                <h3>🌐 3. Сферический конденсатор</h3>
+            </div>
+            <div class="visualization">
+                <svg width="160" height="140" viewBox="0 0 160 140" style="margin: 0 auto;">
+                    <!-- внешняя сфера (контур) -->
+                    <circle cx="80" cy="70" r="48" fill="#cfe3f5" stroke="#2c6285" stroke-width="2" fill-opacity="0.5" />
+                    <!-- внутренняя сфера -->
+                    <circle cx="80" cy="70" r="24" fill="#aac7e0" stroke="#1f4f6e" stroke-width="2" fill-opacity="0.8" />
+                    <text x="30" y="45" font-size="9" fill="#1f4970">R₁</text>
+                    <text x="110" y="45" font-size="9" fill="#1f4970">R₂</text>
+                    <line x1="80" y1="70" x2="105" y2="70" stroke="#3a6e91" stroke-width="1.2" stroke-dasharray="3 2" />
+                    <line x1="80" y1="70" x2="56" y2="70" stroke="#3a6e91" stroke-width="1.2" stroke-dasharray="3 2" />
+                </svg>
+            </div>
+            <div class="controls">
+                <div class="input-group">
+                    <label>📌 Внутренний радиус R₁ (см)</label>
+                    <input type="number" id="sphR1" step="0.2" value="1.5" min="0.5" max="6">
+                </div>
+                <div class="input-group">
+                    <label>📌 Внешний радиус R₂ (см)</label>
+                    <input type="number" id="sphR2" step="0.2" value="3.8" min="1.8" max="10">
+                </div>
+                <div class="result-area" id="sphResult">
+                    ⚡ Ёмкость: <span id="sphCapValue">0.00</span> пФ
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        💡 Электрическая постоянная ε₀ = 8.854·10⁻¹² Ф/м | Расчёты в системе СИ, результат в пикофарадах (пФ)<br>
+        * Для цилиндрического конденсатора R₂ должно быть больше R₁, иначе результат будет некорректным
+    </footer>
+</div>
+
+<script>
+
+    const EPS0 = 8.854187817e-12;
+
+    function cmToM(cm) { return cm / 100; }
+    function mmToM(mm) { return mm / 1000; }
+    function cm2ToM2(cm2) { return cm2 / 10000; }
+
+    // Обновление визуализации плоского конденсатора (без диэлектрической заливки)
+    function updateFlatVisual() {
+        const squareCM = parseFloat(document.getElementById('flatSquareNum')?.value) || 120;
+        const distanceMM = parseFloat(document.getElementById('flatDistanceNum')?.value) || 2.5;
+
+        const svgPlateTop = document.getElementById('flatPlateTop');
+        const svgPlateBottom = document.getElementById('flatPlateBottom');
+        const distanceLine = document.getElementById('distanceLine');
+
+        if (svgPlateTop && svgPlateBottom) {
+            let widthFactor = Math.min(40 + Math.sqrt(squareCM) * 2.2, 150);
+            widthFactor = Math.max(70, widthFactor);
+            const baseX = (200 - widthFactor) / 2;
+            svgPlateTop.setAttribute('x', baseX);
+            svgPlateTop.setAttribute('width', widthFactor);
+            svgPlateBottom.setAttribute('x', baseX);
+            svgPlateBottom.setAttribute('width', widthFactor);
+
+            // расстояние между пластинами (визуально)
+            const gapPx = Math.min(15 + distanceMM * 2.5, 55);
+            const topY = 25;
+            const bottomY = topY + 8 + gapPx;
+            svgPlateBottom.setAttribute('y', bottomY);
+
+            // обновляем линию d
+            if (distanceLine) {
+                distanceLine.setAttribute('x1', baseX + widthFactor/2);
+                distanceLine.setAttribute('x2', baseX + widthFactor/2);
+                distanceLine.setAttribute('y1', topY + 8);
+                distanceLine.setAttribute('y2', bottomY);
+            }
+        }
+    }
+
+    // Функция расчёта плоского конденсатора
+    function computeFlat() {
+        let S_cm2 = parseFloat(document.getElementById('flatSquareNum').value);
+        let epsilon = parseFloat(document.getElementById('flatEpsilon').value);
+        let d_mm = parseFloat(document.getElementById('flatDistanceNum').value);
+
+        if (isNaN(S_cm2)) S_cm2 = 120;
+        if (isNaN(epsilon)) epsilon = 2.2;
+        if (isNaN(d_mm)) d_mm = 2.5;
+
+        S_cm2 = Math.min(500, Math.max(10, S_cm2));
+        d_mm = Math.min(20, Math.max(0.3, d_mm));
+        epsilon = Math.min(10, Math.max(1, epsilon));
+
+        document.getElementById('flatSquareNum').value = S_cm2;
+        document.getElementById('flatDistanceNum').value = d_mm.toFixed(2);
+        document.getElementById('flatEpsilon').value = epsilon;
+
+        const S_m2 = cm2ToM2(S_cm2);
+        const d_m = mmToM(d_mm);
+        const C_farad = EPS0 * epsilon * S_m2 / d_m;
+        const C_pF = C_farad * 1e12;
+        document.getElementById('flatCapValue').innerText = C_pF.toFixed(4);
+        updateFlatVisual();
+    }
+
+
+    function computeCyl() {
+        let length_cm = parseFloat(document.getElementById('cylLength').value);
+        let r1_cm = parseFloat(document.getElementById('cylR1').value);
+        let r2_cm = parseFloat(document.getElementById('cylR2').value);
+
+        if (isNaN(length_cm)) length_cm = 8.0;
+        if (isNaN(r1_cm)) r1_cm = 1.2;
+        if (isNaN(r2_cm)) r2_cm = 2.8;
+
+        // Сохраняем введённые значения (без принудительной корректировки)
+        document.getElementById('cylLength').value = length_cm;
+        document.getElementById('cylR1').value = r1_cm;
+        document.getElementById('cylR2').value = r2_cm;
+
+        // Проверка на корректность: если R2 <= R1, выводим предупреждение и не считаем
+        if (r2_cm <= r1_cm) {
+            document.getElementById('cylCapValue').innerText = "Ошибка: R₂ > R₁";
+            return;
+        }
+
+        const L_m = cmToM(length_cm);
+        const R1_m = cmToM(r1_cm);
+        const R2_m = cmToM(r2_cm);
+        const epsilon_rel = 1.0; // воздух/вакуум
+
+        const C_farad = (2 * Math.PI * EPS0 * epsilon_rel * L_m) / Math.log(R2_m / R1_m);
+        const C_pF = C_farad * 1e12;
+        document.getElementById('cylCapValue').innerText = C_pF.toFixed(4);
+
+        // Визуальная адаптация SVG (без ограничений, но с разумным масштабированием)
+        const svgCyl = document.getElementById('cylinderSvgMain');
+        if (svgCyl) {
+            // Используем реальные значения для визуализации, но ограничиваем визуальный размер для читаемости
+            let visualR1 = Math.min(Math.max(r1_cm * 5, 8), 45);
+            let visualR2 = Math.min(Math.max(r2_cm * 5, visualR1 + 5), 70);
+            let visualL = Math.min(Math.max(length_cm * 4, 40), 110);
+
+            const innerRect = svgCyl.querySelector('rect:nth-of-type(2)');
+            const outerRect = svgCyl.querySelector('rect:first-of-type');
+            if (innerRect && outerRect) {
+                let newWidthInner = visualR1 * 1.8;
+                let newXInner = 100 - newWidthInner/2;
+                innerRect.setAttribute('x', newXInner);
+                innerRect.setAttribute('width', newWidthInner);
+                innerRect.setAttribute('height', visualL);
+                innerRect.setAttribute('y', 25 + (100 - visualL)/2);
+
+                let newWidthOuter = visualR2 * 1.6;
+                let newXOuter = 100 - newWidthOuter/2;
+                outerRect.setAttribute('x', newXOuter);
+                outerRect.setAttribute('width', newWidthOuter);
+                outerRect.setAttribute('height', visualL);
+                outerRect.setAttribute('y', 25 + (100 - visualL)/2);
+
+                const ellipses = svgCyl.querySelectorAll('ellipse');
+                if (ellipses.length >= 4) {
+                    ellipses[0].setAttribute('rx', newWidthOuter/2);
+                    ellipses[1].setAttribute('rx', newWidthOuter/2);
+                    ellipses[2].setAttribute('rx', newWidthInner/2);
+                    ellipses[3].setAttribute('rx', newWidthInner/2);
+                }
+            }
+        }
+    }
+
+    // Сферический конденсатор: C = 4π ε₀ ε * (R₁*R₂)/(R₂ - R₁)
+    function computeSphere() {
+        let r1_cm = parseFloat(document.getElementById('sphR1').value);
+        let r2_cm = parseFloat(document.getElementById('sphR2').value);
+        if (isNaN(r1_cm)) r1_cm = 1.5;
+        if (isNaN(r2_cm)) r2_cm = 3.8;
+
+        r1_cm = Math.min(8, Math.max(0.5, r1_cm));
+        r2_cm = Math.min(15, Math.max(r1_cm + 0.3, r2_cm));
+        if (r2_cm <= r1_cm) r2_cm = r1_cm + 0.5;
+
+        document.getElementById('sphR1').value = r1_cm.toFixed(2);
+        document.getElementById('sphR2').value = r2_cm.toFixed(2);
+
+        const R1_m = cmToM(r1_cm);
+        const R2_m = cmToM(r2_cm);
+        const epsilon_rel = 1.0;
+        const C_farad = 4 * Math.PI * EPS0 * epsilon_rel * (R1_m * R2_m) / (R2_m - R1_m);
+        const C_pF = C_farad * 1e12;
+        document.getElementById('sphCapValue').innerText = C_pF.toFixed(4);
+
+        // адаптация визуализации сфер
+        const svgContainer = document.querySelector('#sphResult').closest('.capacitor-panel').querySelector('svg');
+        if (svgContainer) {
+            const circles = svgContainer.querySelectorAll('circle');
+            if (circles.length >= 2) {
+                let outerR = Math.min(38 + (r2_cm * 2.8), 58);
+                let innerR = Math.min(12 + (r1_cm * 2.4), outerR - 8);
+                if (innerR <= 2) innerR = 8;
+                circles[0].setAttribute('r', outerR);
+                circles[1].setAttribute('r', innerR);
+                circles[0].setAttribute('cx', 80);
+                circles[0].setAttribute('cy', 70);
+                circles[1].setAttribute('cx', 80);
+                circles[1].setAttribute('cy', 70);
+            }
+            const lines = svgContainer.querySelectorAll('line');
+            if (lines.length >= 2) {
+                const outerR = parseFloat(circles[0].getAttribute('r')) || 48;
+                const innerR = parseFloat(circles[1].getAttribute('r')) || 24;
+                lines[0].setAttribute('x2', 80 + outerR * 0.7);
+                lines[1].setAttribute('x1', 80 - innerR * 0.7);
+            }
+        }
+    }
+
+    // синхронизация ползунков плоского конденсатора
+    function bindFlatSliders() {
+        const squareSlider = document.getElementById('flatSquareSlider');
+        const squareNum = document.getElementById('flatSquareNum');
+        const distSlider = document.getElementById('flatDistanceSlider');
+        const distNum = document.getElementById('flatDistanceNum');
+
+        if (squareSlider && squareNum) {
+            squareSlider.addEventListener('input', () => {
+                squareNum.value = squareSlider.value;
+                computeFlat();
+            });
+            squareNum.addEventListener('input', () => {
+                let val = parseFloat(squareNum.value);
+                if (!isNaN(val)) {
+                    val = Math.min(400, Math.max(10, val));
+                    squareSlider.value = val;
+                    squareNum.value = val;
+                    computeFlat();
+                }
+            });
+        }
+        if (distSlider && distNum) {
+            distSlider.addEventListener('input', () => {
+                distNum.value = distSlider.value;
+                computeFlat();
+            });
+            distNum.addEventListener('input', () => {
+                let val = parseFloat(distNum.value);
+                if (!isNaN(val)) {
+                    val = Math.min(15, Math.max(0.3, val));
+                    distSlider.value = val;
+                    distNum.value = val;
+                    computeFlat();
+                }
+            });
+        }
+        const epsilonInput = document.getElementById('flatEpsilon');
+        if (epsilonInput) epsilonInput.addEventListener('input', computeFlat);
+    }
+
+    // привязка событий для цилиндрического (без ограничений)
+    function bindCylEvents() {
+        const inputs = ['cylLength', 'cylR1', 'cylR2'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', computeCyl);
+        });
+    }
+
+    function bindSphEvents() {
+        const inputs = ['sphR1', 'sphR2'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', computeSphere);
+        });
+    }
+
+    // кнопки дополнительно
+    document.getElementById('calcFlatBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        computeFlat();
+    });
+    document.getElementById('calcCylBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        computeCyl();
+    });
+    document.getElementById('calcSphBtn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        computeSphere();
+    });
+
+    // инициализация всех расчётов и визуалов
+    function init() {
+        computeFlat();
+        computeCyl();
+        computeSphere();
+        bindFlatSliders();
+        bindCylEvents();
+        bindSphEvents();
+        window.addEventListener('resize', () => {
+            updateFlatVisual();
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
